@@ -3,8 +3,6 @@ A PoC application demonstrating the power of an Android kernel arbitrary R/W (CV
 
 **Qu1ckR00t is a PROOF OF CONCEPT. It should NOT be used on your personal device with valuable userdata. It has only been tested on a Pixel 2. Running it on any other device / kernel will likely lead to a crash or even data loss. DO NOT install extra Magisk environment files or upgrade Magisk if prompted as this will patch boot, breaking DM-Verity on next boot likely leading to data-loss when you need to reflash.**
 
-No prebuilt APKs are provided to avoid people messing up their device. Build and customize it to your specific device!
-
 ## Notes
 * The exploit for CVE-2019-2215 is at [native/poc.c](https://github.com/grant-h/qu1ckr00t/blob/master/native/poc.c). Compile this with the Android NDK.
 * Native binaries (Magisk + exploit) are bundled into the APK in [app/src/main/res/raw](https://github.com/grant-h/qu1ckr00t/tree/master/app/src/main/res/raw). Add or replace these with device-specific code.
