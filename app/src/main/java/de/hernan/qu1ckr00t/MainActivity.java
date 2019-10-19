@@ -46,9 +46,9 @@ public class MainActivity extends Activity {
         scrollView = (ScrollView)findViewById(R.id.scrollView2);
 
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        addLabel(ssb, "Device", String.format("%s (Android %s)", DeviceInfo.getDeviceName(), DeviceInfo.getAndroidVersion()));
-        addLabel(ssb, "Kernel", String.format("%s (%s)", DeviceInfo.getKernelVersion(), DeviceInfo.getDeviceArchitecture()));
-        addLabel(ssb, "Patch", DeviceInfo.getAndroidPatchLevel());
+        addLabel(ssb, "Device Model", String.format("%s (Android %s)", DeviceInfo.getDeviceName(), DeviceInfo.getAndroidVersion()));
+        addLabel(ssb, "Kernel Version", String.format("%s (%s)", DeviceInfo.getKernelVersion(), DeviceInfo.getDeviceArchitecture()));
+        addLabel(ssb, "Security Patch", DeviceInfo.getAndroidPatchLevel());
         addLabel(ssb, "Fingerprint", DeviceInfo.getBuildFingerprint());
 
         deviceInfo.setText(ssb);
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
         rootButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 rootButton.setText("Rooting...");
-                addStatus("Starting root process");
+                addStatus("[INFO] Starting root process");
                 rootButton.setClickable(false);
                 rootButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
                 new POCTask().execute();
@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
             try {
                 String [] args = {pocPath, "shell_exec", magiskInstPath + " " + magiskPath};
                 if(!executeNativeCode(args)) {
-                    publishProgress("Rooting native execution failed");
+                    publishProgress("[ERROR] Rooting native execution failed");
                     return false;
                 }
 
@@ -112,18 +112,19 @@ public class MainActivity extends Activity {
 
         private void extractPoc()
         {
+
             InputStream poc = getResources().openRawResource(R.raw.poc);
             File pocDir = getApplicationContext().getFilesDir();
             File pocFile = new File(pocDir, "do_root");
             pocPath = pocFile.getPath();
-            publishProgress("Extracting native code from APK...");
+            publishProgress("[INFO] Extracting native code from APK...");
             copyFile(poc, pocFile.getPath());
             pocFile.setExecutable(true);
         }
 
         private void extractMagisk()
         {
-            publishProgress("Extracting Magisk...");
+            publishProgress("[INFO] Extracting Magisk...");
 
             InputStream magisk = getResources().openRawResource(R.raw.magiskinit64);
             File fileDir = getApplicationContext().getFilesDir();
@@ -133,7 +134,7 @@ public class MainActivity extends Activity {
             copyFile(magisk, magiskPath);
             magiskFile.setExecutable(true);
 
-            publishProgress("Extracting installer...");
+            publishProgress("[INFO] Extracting installer...");
 
             InputStream magiskInst = getResources().openRawResource(R.raw.magisk_install);
             File magiskInstFile = new File(fileDir, "magisk_install");
@@ -143,7 +144,7 @@ public class MainActivity extends Activity {
         }
 
         private boolean executeNativeCode(String [] args) throws IOException, InterruptedException {
-            publishProgress("Executing native root binary...");
+            publishProgress("[INFO] Executing native root binary...");
             Process nativeApp = Runtime.getRuntime().exec(args);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(nativeApp.getInputStream()));
@@ -166,13 +167,14 @@ public class MainActivity extends Activity {
 
         protected void onPostExecute(Boolean result) {
             if (!result) {
-                addStatus("Root failed :(\n");
+                addStatus("[ERROR] Root failed :(");
+                addStatus("[INFO] Please reboot and try again\n");
 
-                rootButton.setText("Root");
-                rootButton.setClickable(true);
+                rootButton.setText("Failed");
+                rootButton.setClickable(false);
                 rootButton.getBackground().setColorFilter(null);
             } else {
-                addStatus("Enjoy your rooted device!");
+                addStatus("[SUCCESS] Enjoy your rooted device!");
                 rootButton.setText("Rooted");
             }
         }
